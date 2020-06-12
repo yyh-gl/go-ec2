@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,6 +12,8 @@ type (
 	Client struct {
 		ec2 *ec2.EC2
 	}
+
+	Instances []Instance
 
 	Instance struct {
 		ID    string
@@ -29,28 +30,13 @@ func NewClient() *Client {
 	return &Client{ec2: ec2.New(sess)}
 }
 
-func (c Client) ShowAllInstances(ctx context.Context) error {
-	is, err := c.fetchAllInstances(ctx)
-	if err != nil {
-		return err
-	}
-
-	for _, i := range is {
-		fmt.Println("========================")
-		fmt.Println(i)
-		fmt.Println("========================")
-	}
-
-	return nil
-}
-
-func (c Client) fetchAllInstances(ctx context.Context) ([]Instance, error) {
+func (c Client) FetchAllInstances(ctx context.Context) (Instances, error) {
 	result, err := c.ec2.DescribeInstancesWithContext(ctx, &ec2.DescribeInstancesInput{})
 	if err != nil {
 		return nil, err
 	}
 
-	is := make([]Instance, 0)
+	var is Instances
 	for _, r := range result.Reservations {
 		for _, i := range r.Instances {
 			n := ""

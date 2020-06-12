@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -20,12 +21,16 @@ var (
 			fmt.Println("========================")
 			fmt.Println(internal.LoadConfigFile(configPath))
 			fmt.Println("========================")
-			//c := internal.NewClient()
-			//err := c.ShowAllInstances(context.Background())
-			//if err != nil {
-			//	fmt.Println(err)
-			//	os.Exit(1)
-			//}
+			c := internal.NewClient()
+			is, err := c.FetchAllInstances(context.Background())
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			fmt.Println("========================")
+			fmt.Println(is)
+			fmt.Println("========================")
 		},
 	}
 )
