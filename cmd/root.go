@@ -18,19 +18,11 @@ var (
 		Short:   "EC2 Manager",
 		Long:    "Simple EC2 Manager made by Go.",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("========================")
-			fmt.Println(internal.LoadConfigFile(configPath))
-			fmt.Println("========================")
-			c := internal.NewClient()
-			is, err := c.FetchAllInstances(context.Background())
-			if err != nil {
+			m := internal.NewManger(configPath)
+			if err := m.Do(context.Background()); err != nil {
 				fmt.Println(err)
 				os.Exit(1)
 			}
-
-			fmt.Println("========================")
-			fmt.Println(is)
-			fmt.Println("========================")
 		},
 	}
 )
