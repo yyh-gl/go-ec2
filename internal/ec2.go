@@ -6,6 +6,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/yyh-gl/go-ec2/internal/sender"
 )
 
 type (
@@ -56,4 +57,21 @@ func (c Client) FetchAllInstances(ctx context.Context) (Instances, error) {
 		}
 	}
 	return is, nil
+}
+
+func (i Instance) ConvertToMsgMaterial() (*sender.Material, error) {
+	m := sender.Material(i)
+	return &m, nil
+}
+
+func (is Instances) ConvertToMsgMaterials() (sender.Materials, error) {
+	msgs := make(sender.Materials, len(is))
+	for ix, i := range is {
+		msg, err := i.ConvertToMsgMaterial()
+		if err != nil {
+			return nil, err
+		}
+		msgs[ix] = *msg
+	}
+	return msgs, nil
 }
