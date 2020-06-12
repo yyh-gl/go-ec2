@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/yyh-gl/go-ec2/internal"
 )
 
 var (
@@ -15,7 +17,14 @@ var (
 		Version: "0.1.0",
 		Short:   "EC2 Manager",
 		Long:    "Simple EC2 Manager made by Go.",
-		Run:     func(cmd *cobra.Command, args []string) {},
+		Run: func(cmd *cobra.Command, args []string) {
+			c := internal.NewClient()
+			err := c.ShowAllInstances(context.Background())
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		},
 	}
 )
 
