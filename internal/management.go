@@ -35,7 +35,7 @@ func NewManger(configPath string) *Manager {
 	}
 }
 
-func (m Manager) Do(ctx context.Context) error {
+func (m Manager) PrintAllState(ctx context.Context) error {
 	for _, a := range m.awsAccounts {
 		c := NewClient()
 		is, err := c.FetchAllInstances(context.Background())
