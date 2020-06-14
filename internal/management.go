@@ -38,7 +38,7 @@ func NewManger(configPath string) *Manager {
 func (m Manager) PrintAllState(ctx context.Context) error {
 	for _, a := range m.awsAccounts {
 		c := NewClient()
-		is, err := c.FetchAllInstances(context.Background())
+		is, err := c.FetchAllInstances(ctx)
 		if err != nil {
 			return err
 		}
@@ -51,6 +51,37 @@ func (m Manager) PrintAllState(ctx context.Context) error {
 		if err := m.senders[a.Sender].Send(msgs); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m Manager) StopAllInstances(ctx context.Context) error {
+	for _, _ = range m.awsAccounts {
+		c := NewClient()
+		is, err := c.FetchAllInstances(ctx)
+		if err != nil {
+			return err
+		}
+
+		instanceIDs := make([]*string, len(is))
+		for ix, i := range is {
+			i := i
+			instanceIDs[ix] = &i.ID
+		}
+
+		if err := c.StopInstances(ctx, instanceIDs); err != nil {
+			return err
+		}
+
+		//msgs, err := is.ConvertToMsgMaterials()
+		//if err != nil {
+		//	return err
+		//}
+		//
+		//if err := m.senders[a.Sender].Send(msgs); err != nil {
+		//	return err
+		//}
 	}
 
 	return nil

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -29,6 +30,20 @@ func NewClient() *Client {
 		Region: aws.String("ap-northeast-1")},
 	))
 	return &Client{ec2: ec2.New(sess)}
+}
+
+func (c Client) StopInstances(ctx context.Context, instanceIDs []*string) error {
+	result, err := c.ec2.StopInstancesWithContext(ctx, &ec2.StopInstancesInput{
+		InstanceIds: instanceIDs,
+	})
+	if err != nil {
+		return err
+	}
+	fmt.Println("========================")
+	fmt.Println(result)
+	fmt.Println("========================")
+
+	return nil
 }
 
 func (c Client) FetchAllInstances(ctx context.Context) (Instances, error) {

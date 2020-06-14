@@ -31,6 +31,19 @@ var (
 			}
 		},
 	}
+
+	stopCmd = &cobra.Command{
+		Use:   "stop",
+		Short: "Print the states of all instances",
+		Long:  "Print the states of all instances",
+		Run: func(cmd *cobra.Command, args []string) {
+			m := internal.NewManger(configPath)
+			if err := m.StopAllInstances(context.Background()); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		},
+	}
 )
 
 func init() {
@@ -41,7 +54,9 @@ func init() {
 	}
 
 	stateCmd.Flags().StringVarP(&configPath, "cfgPath", "c", homeDir+"/.go-ec2.yml", "Path to config file")
+	stopCmd.Flags().StringVarP(&configPath, "cfgPath", "c", homeDir+"/.go-ec2.yml", "Path to config file")
 	rootCmd.AddCommand(stateCmd)
+	rootCmd.AddCommand(stopCmd)
 }
 
 func Execute() {
