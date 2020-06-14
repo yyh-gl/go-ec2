@@ -48,7 +48,7 @@ func (m Manager) PrintAllState(ctx context.Context) error {
 			return err
 		}
 
-		if err := m.senders[a.Sender].Send(msgs); err != nil {
+		if err := m.senders[a.Sender].Send("Instance State List", msgs); err != nil {
 			return err
 		}
 	}
@@ -64,26 +64,32 @@ func (m Manager) StopAllInstances(ctx context.Context) error {
 			return err
 		}
 
-		instanceIDs := make([]*string, 0)
+		targetInstaces := make(Instances, 0)
+		targetInstanceIDs := make([]*string, 0)
 		for _, i := range is {
 			if !isExcludedInstance(a.Exclusions, i.ID) {
 				i := i
-				instanceIDs = append(instanceIDs, &i.ID)
+				i.State = "stopping"
+				targetInstaces = append(targetInstaces, i)
+				targetInstanceIDs = append(targetInstanceIDs, &i.ID)
 			}
 		}
 
-		if err := c.StopInstances(ctx, instanceIDs); err != nil {
-			return err
-		}
+		if len(targetInstanceIDs) > 0 {
+			// TODO: 返ってきたインスタンス情報からメッセージを組み立てる
+			if _, err := c.StopInstances(ctx, targetInstanceIDs); err != nil {
+				return err
+			}
 
-		//msgs, err := is.ConvertToMsgMaterials()
-		//if err != nil {
-		//	return err
-		//}
-		//
-		//if err := m.senders[a.Sender].Send(msgs); err != nil {
-		//	return err
-		//}
+			mtrs, err := targetInstaces.ConvertToMsgMaterials()
+			if err != nil {
+				return err
+			}
+
+			if err := m.senders[a.Sender].Send("Stop Instance List", mtrs); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
@@ -91,7 +97,7 @@ func (m Manager) StopAllInstances(ctx context.Context) error {
 
 func isExcludedInstance(exclusions []string, instanceID string) bool {
 	for _, e := range exclusions {
-		if instanceID == e {
+		if instanceID != e {
 			return true
 		}
 	}

@@ -28,7 +28,7 @@ func NewClient(sender interface{}) sender.Sender {
 	}
 }
 
-func (s Sender) Send(materials sender.Materials) error {
+func (s Sender) Send(text string, materials sender.Materials) error {
 	if len(materials) == 0 {
 		// TODO: message for when no instance
 		return nil
@@ -39,7 +39,7 @@ func (s Sender) Send(materials sender.Materials) error {
 		IconUrl:     "",
 		IconEmoji:   ":" + s.iconEmoji + ":",
 		Channel:     s.channel,
-		Text:        "",
+		Text:        text,
 		LinkNames:   "true",
 		Attachments: createAttachments(materials),
 		UnfurlLinks: false,
