@@ -18,7 +18,8 @@ type (
 	AWSAccountSet map[string]AWSAccount
 
 	AWSAccount struct {
-		Sender string `yaml:"sender"`
+		Exclusions []string `yaml:"exclusions"`
+		Sender     string   `yaml:"sender"`
 	}
 
 	SenderSet map[string]map[string]interface{}

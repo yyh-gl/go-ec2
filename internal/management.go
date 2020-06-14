@@ -57,17 +57,19 @@ func (m Manager) PrintAllState(ctx context.Context) error {
 }
 
 func (m Manager) StopAllInstances(ctx context.Context) error {
-	for _, _ = range m.awsAccounts {
+	for _, a := range m.awsAccounts {
 		c := NewClient()
 		is, err := c.FetchAllInstances(ctx)
 		if err != nil {
 			return err
 		}
 
-		instanceIDs := make([]*string, len(is))
-		for ix, i := range is {
-			i := i
-			instanceIDs[ix] = &i.ID
+		instanceIDs := make([]*string, 0)
+		for _, i := range is {
+			if !isExcludedInstance(a.Exclusions, i.ID) {
+				i := i
+				instanceIDs = append(instanceIDs, &i.ID)
+			}
 		}
 
 		if err := c.StopInstances(ctx, instanceIDs); err != nil {
@@ -85,4 +87,13 @@ func (m Manager) StopAllInstances(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func isExcludedInstance(exclusions []string, instanceID string) bool {
+	for _, e := range exclusions {
+		if instanceID == e {
+			return true
+		}
+	}
+	return false
 }
