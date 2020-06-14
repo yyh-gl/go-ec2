@@ -2,7 +2,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -22,6 +21,24 @@ type (
 		Name  string
 		State string
 	}
+
+	StopInstances []StopInstance
+
+	StopInstance struct {
+		InstanceID    string        `json:"InstanceID"`
+		CurrentState  CurrentState  `json:"CurrentState"`
+		PreviousState PreviousState `json:"PreviousState"`
+	}
+
+	CurrentState struct {
+		Code int64  `json:"code"`
+		Name string `json:"name"`
+	}
+
+	PreviousState struct {
+		Code int64  `json:"code"`
+		Name string `json:"name"`
+	}
 )
 
 func NewClient() *Client {
@@ -32,18 +49,29 @@ func NewClient() *Client {
 	return &Client{ec2: ec2.New(sess)}
 }
 
-func (c Client) StopInstances(ctx context.Context, instanceIDs []*string) error {
-	result, err := c.ec2.StopInstancesWithContext(ctx, &ec2.StopInstancesInput{
+func (c Client) StopInstances(ctx context.Context, instanceIDs []*string) (StopInstances, error) {
+	resp, err := c.ec2.StopInstancesWithContext(ctx, &ec2.StopInstancesInput{
 		InstanceIds: instanceIDs,
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Println("========================")
-	fmt.Println(result)
-	fmt.Println("========================")
 
-	return nil
+	stopInstances := make(StopInstances, len(resp.StoppingInstances))
+	for i, si := range resp.StoppingInstances {
+		stopInstances[i] = StopInstance{
+			InstanceID: *si.InstanceId,
+			CurrentState: CurrentState{
+				Code: *si.CurrentState.Code,
+				Name: *si.CurrentState.Name,
+			},
+			PreviousState: PreviousState{
+				Code: *si.PreviousState.Code,
+				Name: *si.PreviousState.Name,
+			},
+		}
+	}
+	return stopInstances, nil
 }
 
 func (c Client) FetchAllInstances(ctx context.Context) (Instances, error) {
