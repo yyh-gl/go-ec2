@@ -1,0 +1,28 @@
+# AWS accounts configs
+accounts:
+  # AWS Account config id
+  dev-team:
+    # Excluding Instance config
+    exclusions:
+      - j-06cebed121c9ehoge
+    # ID of Slack notification destination setting
+    sender: dev-team
+    # FEATURE: We will be able to decide the profile of aws credential.
+    # credential_profile: default
+
+# Sender configs
+senders:
+  # Slack notification destination configs
+  slacks:
+    # Sender config id
+    dev-team:
+      channel: production_notifications
+      username: Notifier
+      icon_emoji: smirk
+      web_hook: https://hooks.slack.com/hoge/foo
+
+    personal:
+      channel: aws_notifications
+      username: Notifier
+      icon_emoji: smile
+      web_hook: https://hooks.slack.com/hoge/foo
