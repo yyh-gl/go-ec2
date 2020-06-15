@@ -2,13 +2,16 @@
 accounts:
   # AWS Account config id
   dev-team:
+    # Account name
+    name: system Dev/Stg
     # Excluding Instance config
     exclusions:
       - j-06cebed121c9ehoge
     # ID of Slack notification destination setting
     sender: dev-team
-    # FEATURE: We will be able to decide the profile of aws credential.
-    # credential_profile: default
+    # AWS credential profile that you use
+    profile: default
+    region: ap-northeast-1
 
 # Sender configs
 senders:
