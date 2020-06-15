@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/aws/aws-sdk-go/aws"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/yyh-gl/go-ec2/internal/sender"
@@ -41,11 +42,11 @@ type (
 	}
 )
 
-func NewClient() *Client {
-	// TODO: プロファイル指定できるようにする
-	sess := session.Must(session.NewSession(&aws.Config{
-		Region: aws.String("ap-northeast-1")},
-	))
+func NewClient(profile, region string) *Client {
+	sess := session.Must(session.NewSessionWithOptions(session.Options{
+		Profile: profile,
+		Config:  aws.Config{Region: &region},
+	}))
 	return &Client{ec2: ec2.New(sess)}
 }
 

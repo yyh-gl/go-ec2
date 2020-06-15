@@ -37,7 +37,7 @@ func NewManger(configPath string) *Manager {
 
 func (m Manager) PrintAllState(ctx context.Context) error {
 	for _, a := range m.awsAccounts {
-		c := NewClient()
+		c := NewClient(a.Profile, a.Region)
 		is, err := c.FetchAllInstances(ctx)
 		if err != nil {
 			return err
@@ -48,7 +48,7 @@ func (m Manager) PrintAllState(ctx context.Context) error {
 			return err
 		}
 
-		if err := m.senders[a.Sender].Send("Instance State List", msgs); err != nil {
+		if err := m.senders[a.Sender].Send(a.Name, msgs); err != nil {
 			return err
 		}
 	}
@@ -58,7 +58,7 @@ func (m Manager) PrintAllState(ctx context.Context) error {
 
 func (m Manager) StopAllInstances(ctx context.Context) error {
 	for _, a := range m.awsAccounts {
-		c := NewClient()
+		c := NewClient(a.Profile, a.Region)
 		is, err := c.FetchAllInstances(ctx)
 		if err != nil {
 			return err
@@ -86,7 +86,7 @@ func (m Manager) StopAllInstances(ctx context.Context) error {
 				return err
 			}
 
-			if err := m.senders[a.Sender].Send("Stop Instance List", mtrs); err != nil {
+			if err := m.senders[a.Sender].Send(a.Name, mtrs); err != nil {
 				return err
 			}
 		}
@@ -97,7 +97,7 @@ func (m Manager) StopAllInstances(ctx context.Context) error {
 
 func isExcludedInstance(exclusions []string, instanceID string) bool {
 	for _, e := range exclusions {
-		if instanceID != e {
+		if instanceID == e {
 			return true
 		}
 	}
