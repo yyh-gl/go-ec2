@@ -2,7 +2,7 @@ package sender
 
 type (
 	Sender interface {
-		Send(text string, materials Materials) error
+		Send(name string, materials Materials) error
 	}
 
 	Material struct {
