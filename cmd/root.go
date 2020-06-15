@@ -14,7 +14,7 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:     "go-ec2",
-		Version: "0.1.0",
+		Version: "0.2.1",
 		Short:   "EC2 Manager",
 		Long:    "Simple EC2 Manager made by Go.",
 	}
